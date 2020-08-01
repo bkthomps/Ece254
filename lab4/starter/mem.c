@@ -107,7 +107,7 @@ void *best_fit_alloc(size_t old_size)
 		closest->state = USED;
 		return closest->data_start;
 	}
-	const size_t remaining_size = closest->data_size - aligned_size - sizeof(struct node);
+	const int remaining_size = closest->data_size - aligned_size - sizeof(struct node);
 	if (remaining_size < 0) {
 		closest->state = USED;
 		closest->data_size += closest->data_size - aligned_size;
@@ -116,7 +116,8 @@ void *best_fit_alloc(size_t old_size)
 		struct node *insert = (void *) closest->data_start + aligned_size;
 		insert->prev_node = closest;
 		insert->next_node = closest->next_node;
-		insert->data_size = closest->data_size - aligned_size - sizeof(struct node);
+		insert->data_size = remaining_size;
+		
 		insert->data_start = insert + 1;
 		insert->state = FREE;
 		// old block
@@ -150,7 +151,7 @@ void *worst_fit_alloc(size_t old_size)
 		biggest->state = USED;
 		return biggest->data_start;
 	}
-	const size_t remaining_size = biggest->data_size - aligned_size - sizeof(struct node);
+	const int remaining_size = biggest->data_size - aligned_size - sizeof(struct node);
 	if (remaining_size < 0) {
 		biggest->state = USED;
 		biggest->data_size += biggest->data_size - aligned_size;
@@ -180,6 +181,7 @@ void best_fit_dealloc(void *ptr)
 	}
 	struct node *control = (struct node *) ptr - 1;
 	control->state = FREE;
+
 	// coalescence
 	if (control->next_node && control->next_node->state == FREE) {
 		struct node *control_next = control->next_node;
@@ -188,6 +190,8 @@ void best_fit_dealloc(void *ptr)
 		}
 		control->next_node = control_next->next_node;
 		control->data_size += sizeof(struct node) + control_next->data_size;
+	} else {
+
 	}
 	if (control->prev_node && control->prev_node->state == FREE) {
 		struct node *control_prev = control->prev_node;
