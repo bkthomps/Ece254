@@ -1,0 +1,85 @@
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <mqueue.h>
+#include <sys/stat.h>
+#include <time.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <math.h>
+
+#define EPS 					1.E-7
+#define TEN_TO_THE_SIX_DECIMAL1000000.0
+
+static void producer(const int id) {
+
+}
+
+static void consumer(const int cid) {
+
+}
+
+int main(int argc, char **argv)
+{
+	if (argc != 5) {
+		printf("Usage: %s <N> <B> <P> <C>\n", argv[0]);
+		exit(1);
+	}
+	const int num_items	= atoi(argv[1]);	/* number of items to produce */
+	const int buffer_size	= atoi(argv[2]);	/* buffer size                */
+	const int num_producers	= atoi(argv[3]);	/* number of producers        */
+	const int num_consumers	= atoi(argv[4]);	/* number of consumers        */
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	const double start_time_in_seconds = (tv.tv_sec) + tv.tv_usec / TEN_TO_THE_SIX_DECIMAL;
+	struct mr_attr attr;
+	attr.mq_flags	= 0;
+	attr.mq_maxmsg	= buffer_size;
+	attr.mq_msgsize	= 256;
+	attr.mq_curmsgs	= 0;
+	mqd_t queue = mq_open("queue", O_RDWR, NULL, &attr);
+	if (queue) {
+		printf("Queue open failed\n");
+		exit(1);
+	}
+	int p_cnt = 0;
+	int c_cnt = 0;
+	int child_pid[num_producers + num_consumers];
+fork_process:
+	const int pid = fork();
+	if (pid < 0) {
+		printf("Fork failed\n");
+		exit(1);
+	} else if (pid) {	/* parent */
+		if (p_cnt < num_producers) {
+			child_pid[p_cnt] = pid;
+			p_cnt++;
+			goto fork_process;
+		}
+		if (c_cnt < num_consumers) {
+			child_pid[p_cnt + c_cnt] = pid;
+			c_cnt++;
+			goto fork_process;
+		}
+	} else {	/* child */
+		if (p_cnt < num_producers) {
+			producer(p_cnt);
+		} else {
+			consumer(c_cnt);
+		}
+	}
+	for (int i = 0; i < num_producers + num_consumers; i++) {
+		waitpid(child_pid[i], NULL, 0);
+	}
+	if (mq_close(queue)) {
+		printf("Queue close failed\n");
+		exit(1);
+	}
+    gettimeofday(&tv, NULL);
+    const double end_time_in_seconds = (tv.tv_sec) + tv.tv_usec / TEN_TO_THE_SIX_DECIMAL;
+    printf("System execution time: %.6lf seconds\n", \
+            end_time_in_seconds - start_time_in_seconds);
+	exit(0);
+}
