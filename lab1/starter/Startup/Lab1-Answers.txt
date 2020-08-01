@@ -1,0 +1,45 @@
+1. (1 point) Which global variable has the os_active_TCB array length information?
+
+
+2. (1 point) What does os_active_TCB array in RTX_lib.c contain?
+
+
+3. (1 point) Which global variable has the os idle task TCB information?
+
+
+4. (1 point) Is the TCB of the os idle task an element in the os_active_TCB?
+
+
+5. (1 point) Read rt_get_TID() code in rt_Task.c file. Assume that a non-idle task has a task ID of n, what is the index of this task’s TCB in the os_active_TCB array?
+
+
+6. Read the rt_TypeDef.h file and answer the following questions.
+6.1 (1 point) What is the purpose of the p_lnk variable in the struct OS_TCB?
+
+
+6.2 (1 point) What is the purpose of tsk_stack and stack variables in struct OS_TCB?
+
+
+6.3 (1 point) If you have a variable with type of struct OS_XCB *, will casting this variable to struct OS_TCB * keep the p_lnk field?
+
+
+7. Read the rt_Task.c and RTX_lib.c files and answer the following question.
+7.1 (2 points) What is the purpose of variables mp_tcb and mp_stk?
+     You may want to search the entire source code to further explore how these variables are set and used (see Figure 1.28).
+
+
+8. Read Section C.2.3 and study rt_init_stack() and rt_get_PSP() functions source code in HAL_CM3.c file and answer the following questions.
+8.1 (2 points) Which registers are saved on the task stack?
+
+
+8.2 (2 points) Which bits of which global variable contain the default task stack size in bytes?
+
+
+8.3 (2 points) How to determine the memory address of the first item that is pushed onto a task stack?
+
+
+8.4 (2 points) For a task that is not in RUNNING state, how to determine the memory address of the last item that is pushed onto its task stack (i.e. the top of the stack)?
+
+
+8.5 (2 points) For a task that is in RUNNING state, how to determine the memory address of the last item that is pushed onto its task stack (i.e. the top of the stack)?
+

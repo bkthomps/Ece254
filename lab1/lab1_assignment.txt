@@ -1,0 +1,15 @@
+Lab 1 Assignment Questions
+1. os_maxtaskrun
+2. it contains the PCB pointers for all the active tasks
+3. os_idle_TCB
+4. no the idle task is not in the os_active_TCB array
+5. index is n-1
+6. a) p_lnk variable is a pointer to a linked list containing the tasks whose state is ready or wait_sem
+   b) tsk_stack is a pointer to the top of the stack pointer, stack is a pointer to the address of where the stack begins
+   c) It is compiler dependent as it depends on how the compiler packs the struct.
+7. mp_tcb is the memory pool dedicated to the tcb blocks, while mp_stk is the variable representing the memory pool dedicated to each process stack
+8. a) R1-R12, LR
+   b) In bytes, the default task stack size is from bits 0 to bit 15
+   c) The memory address of the first item that is pushed onto the stack is &p_TCB->stack[OS_STKSIZE]
+   d) For a task not in running state the memory address of the last item pushed onto the stack is tsk_stack_ptr
+   e) For a task in the running state call rt_get_PSP() which will be the recently updated process stack pointer value
